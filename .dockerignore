@@ -1,0 +1,26 @@
+# Dependencies (di-install ulang di dalam image)
+node_modules
+npm-debug.log*
+yarn-error.log*
+
+# Runtime data (di-mount sebagai volume)
+output
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+
+# Git & editor
+.git
+.gitignore
+.vscode
+.idea
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docs (opsional — hapus baris ini kalau mau include di image)
+README.md

@@ -1,0 +1,48 @@
+services:
+  # ═══════════════════════════════════════════════════════════
+  # API Server — selalu jalan
+  # ═══════════════════════════════════════════════════════════
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: push-docs:latest
+    container_name: push-docs-api
+    restart: unless-stopped
+    ports:
+      - "${HOST_PORT:-3001}:3001"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    volumes:
+      # Data output (jobs.db, JSONL, summary) — persist di host
+      - ./output:/app/output
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://localhost:3001/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ═══════════════════════════════════════════════════════════
+  # CLI Batch — profile `cli` (tidak jalan saat `up` biasa)
+  # Override command saat run.
+  # ═══════════════════════════════════════════════════════════
+  cli:
+    image: push-docs:latest
+    profiles: ["cli"]
+    env_file:
+      - .env
+    volumes:
+      - ./output:/app/output
+    # command akan di-override saat `docker compose run`
