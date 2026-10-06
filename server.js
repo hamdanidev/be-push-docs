@@ -246,9 +246,9 @@ const PORT = parseInt(process.env.PORT || '3001');
 const server = app.listen(PORT, () => {
   console.log('═'.repeat(60));
   console.log(`Push Docs API listening on http://localhost:${PORT}`);
-  console.log(`Health : http://localhost:${PORT}/pushdocs/health`);
-  console.log(`Me     : http://localhost:${PORT}/pushdocs/auth/me`);
-  console.log(`Jobs   : http://localhost:${PORT}/pushdocs/jobs`);
+  console.log(`Health : http://localhost:${PORT}/v1.0/pushdocs/health`);
+  console.log(`Me     : http://localhost:${PORT}/v1.0/pushdocs/auth/me`);
+  console.log(`Jobs   : http://localhost:${PORT}/v1.0/pushdocs/jobs`);
   console.log(`UI     : http://localhost:${PORT}/`);
   console.log('═'.repeat(60));
   recoverStalledJobs();
