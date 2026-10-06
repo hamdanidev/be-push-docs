@@ -9,12 +9,27 @@ const authMiddleware = require('./lib/auth-middleware');
 const app = express();
 app.use(express.json({ limit: '1mb' }));
 
+app.get('/', (req, res) => {
+  res.json({
+    ok: true,
+    service: 'push-docs-api',
+    version: '1.1.0',
+    ts: new Date().toISOString(),
+    endpoints: {
+      health: '/v1.0/pushdocs/health',
+      me:     '/v1.0/pushdocs/auth/me',
+      jobs:   '/v1.0/pushdocs/jobs',
+    },
+  });
+});
+
 /* ─────────────────────────────────────────────────────────────
    AUTH MIDDLEWARE
    - Skip /pushdocs/health dan static (non-/pushdocs/)
    - Semua /pushdocs/* wajib Authorization header (raw token)
    ───────────────────────────────────────────────────────────── */
 app.use(authMiddleware);
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 
