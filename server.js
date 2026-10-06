@@ -11,8 +11,8 @@ app.use(express.json({ limit: '1mb' }));
 
 /* ─────────────────────────────────────────────────────────────
    AUTH MIDDLEWARE
-   - Skip /health dan static (non-/api/)
-   - Semua /api/* wajib Authorization header (raw token)
+   - Skip /pushdocs/health dan static (non-/pushdocs/)
+   - Semua /pushdocs/* wajib Authorization header (raw token)
    ───────────────────────────────────────────────────────────── */
 app.use(authMiddleware);
 
@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 /* ─────────────────────────────────────────────────────────────
    HEALTH (public)
    ───────────────────────────────────────────────────────────── */
-app.get('/health', (req, res) => {
+app.get('/pushdocs/health', (req, res) => {
   res.json({
     ok: true,
     ts: new Date().toISOString(),
@@ -30,9 +30,9 @@ app.get('/health', (req, res) => {
 });
 
 /* ─────────────────────────────────────────────────────────────
-   GET /api/auth/me — verifikasi token & lihat user
+   GET /pushdocs/auth/me — verifikasi token & lihat user
    ───────────────────────────────────────────────────────────── */
-app.get('/api/auth/me', (req, res) => {
+app.get('/pushdocs/auth/me', (req, res) => {
   res.json({
     kd: req.user.kd,
     username: req.user.username,
@@ -50,9 +50,9 @@ function isValidDateDMY(str) {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   POST /api/jobs — start job (return 202 + job_id)
+   POST /pushdocs/jobs — start job (return 202 + job_id)
    ───────────────────────────────────────────────────────────── */
-app.post('/api/jobs', (req, res) => {
+app.post('/pushdocs/jobs', (req, res) => {
   const b = req.body || {};
 
   const params = {
@@ -99,16 +99,16 @@ app.post('/api/jobs', (req, res) => {
       username: req.user.username,
       nama: req.user.nama_lengkap,
     },
-    poll_url: `/api/jobs/${job.id}`,
-    result_url: `/api/jobs/${job.id}/result`,
+    poll_url: `/pushdocs/jobs/${job.id}`,
+    result_url: `/pushdocs/jobs/${job.id}/result`,
   });
 });
 
 /* ─────────────────────────────────────────────────────────────
-   GET /api/jobs — list jobs
+   GET /pushdocs/jobs — list jobs
    Non-superadmin hanya lihat job miliknya sendiri.
    ───────────────────────────────────────────────────────────── */
-app.get('/api/jobs', (req, res) => {
+app.get('/pushdocs/jobs', (req, res) => {
   const isSuperadmin = req.user.group?.nama === 'superadmin';
 
   const jobs = jobStore.listJobs({
@@ -130,9 +130,9 @@ app.get('/api/jobs', (req, res) => {
 });
 
 /* ─────────────────────────────────────────────────────────────
-   GET /api/jobs/:id — polling status (ringan)
+   GET /pushdocs/jobs/:id — polling status (ringan)
    ───────────────────────────────────────────────────────────── */
-app.get('/api/jobs/:id', (req, res) => {
+app.get('/pushdocs/jobs/:id', (req, res) => {
   const job = jobStore.getJob(req.params.id);
   if (!job) return res.status(404).json({ error: 'Job not found' });
 
@@ -151,9 +151,9 @@ app.get('/api/jobs/:id', (req, res) => {
 });
 
 /* ─────────────────────────────────────────────────────────────
-   GET /api/jobs/:id/result — hasil final
+   GET /pushdocs/jobs/:id/result — hasil final
    ───────────────────────────────────────────────────────────── */
-app.get('/api/jobs/:id/result', (req, res) => {
+app.get('/pushdocs/jobs/:id/result', (req, res) => {
   const job = jobStore.getJob(req.params.id);
   if (!job) return res.status(404).json({ error: 'Job not found' });
 
@@ -181,10 +181,10 @@ app.get('/api/jobs/:id/result', (req, res) => {
 });
 
 /* ─────────────────────────────────────────────────────────────
-   POST /api/jobs/:id/cancel
+   POST /pushdocs/jobs/:id/cancel
    Hanya owner atau superadmin.
    ───────────────────────────────────────────────────────────── */
-app.post('/api/jobs/:id/cancel', (req, res) => {
+app.post('/pushdocs/jobs/:id/cancel', (req, res) => {
   const job = jobStore.getJob(req.params.id);
   if (!job) return res.status(404).json({ error: 'Job not found' });
 
@@ -246,9 +246,9 @@ const PORT = parseInt(process.env.PORT || '3001');
 const server = app.listen(PORT, () => {
   console.log('═'.repeat(60));
   console.log(`Push Docs API listening on http://localhost:${PORT}`);
-  console.log(`Health : http://localhost:${PORT}/health`);
-  console.log(`Me     : http://localhost:${PORT}/api/auth/me`);
-  console.log(`Jobs   : http://localhost:${PORT}/api/jobs`);
+  console.log(`Health : http://localhost:${PORT}/pushdocs/health`);
+  console.log(`Me     : http://localhost:${PORT}/pushdocs/auth/me`);
+  console.log(`Jobs   : http://localhost:${PORT}/pushdocs/jobs`);
   console.log(`UI     : http://localhost:${PORT}/`);
   console.log('═'.repeat(60));
   recoverStalledJobs();
