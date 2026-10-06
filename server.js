@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 /* ─────────────────────────────────────────────────────────────
    HEALTH (public)
    ───────────────────────────────────────────────────────────── */
-app.get('/pushdocs/health', (req, res) => {
+app.get('/v1.0/pushdocs/health', (req, res) => {
   res.json({
     ok: true,
     ts: new Date().toISOString(),
@@ -32,7 +32,7 @@ app.get('/pushdocs/health', (req, res) => {
 /* ─────────────────────────────────────────────────────────────
    GET /pushdocs/auth/me — verifikasi token & lihat user
    ───────────────────────────────────────────────────────────── */
-app.get('/pushdocs/auth/me', (req, res) => {
+app.get('/v1.0/pushdocs/auth/me', (req, res) => {
   res.json({
     kd: req.user.kd,
     username: req.user.username,
@@ -52,7 +52,7 @@ function isValidDateDMY(str) {
 /* ─────────────────────────────────────────────────────────────
    POST /pushdocs/jobs — start job (return 202 + job_id)
    ───────────────────────────────────────────────────────────── */
-app.post('/pushdocs/jobs', (req, res) => {
+app.post('/v1.0/pushdocs/jobs', (req, res) => {
   const b = req.body || {};
 
   const params = {
@@ -108,7 +108,7 @@ app.post('/pushdocs/jobs', (req, res) => {
    GET /pushdocs/jobs — list jobs
    Non-superadmin hanya lihat job miliknya sendiri.
    ───────────────────────────────────────────────────────────── */
-app.get('/pushdocs/jobs', (req, res) => {
+app.get('/v1.0/pushdocs/jobs', (req, res) => {
   const isSuperadmin = req.user.group?.nama === 'superadmin';
 
   const jobs = jobStore.listJobs({
@@ -132,7 +132,7 @@ app.get('/pushdocs/jobs', (req, res) => {
 /* ─────────────────────────────────────────────────────────────
    GET /pushdocs/jobs/:id — polling status (ringan)
    ───────────────────────────────────────────────────────────── */
-app.get('/pushdocs/jobs/:id', (req, res) => {
+app.get('/v1.0/pushdocs/jobs/:id', (req, res) => {
   const job = jobStore.getJob(req.params.id);
   if (!job) return res.status(404).json({ error: 'Job not found' });
 
@@ -153,7 +153,7 @@ app.get('/pushdocs/jobs/:id', (req, res) => {
 /* ─────────────────────────────────────────────────────────────
    GET /pushdocs/jobs/:id/result — hasil final
    ───────────────────────────────────────────────────────────── */
-app.get('/pushdocs/jobs/:id/result', (req, res) => {
+app.get('/v1.0/pushdocs/jobs/:id/result', (req, res) => {
   const job = jobStore.getJob(req.params.id);
   if (!job) return res.status(404).json({ error: 'Job not found' });
 
@@ -184,7 +184,7 @@ app.get('/pushdocs/jobs/:id/result', (req, res) => {
    POST /pushdocs/jobs/:id/cancel
    Hanya owner atau superadmin.
    ───────────────────────────────────────────────────────────── */
-app.post('/pushdocs/jobs/:id/cancel', (req, res) => {
+app.post('/v1.0/pushdocs/jobs/:id/cancel', (req, res) => {
   const job = jobStore.getJob(req.params.id);
   if (!job) return res.status(404).json({ error: 'Job not found' });
 
